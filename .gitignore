@@ -1,0 +1,20 @@
+*.pyc
+.idea/
+__pyc__/
+
+
+build/
+dist/
+eggs/
+.eggs/
+lib/
+*.egg-info/
+
+.media/
+
+
+# Environments
+.env
+.venv
+env/
+
