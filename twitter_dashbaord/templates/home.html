@@ -1,0 +1,377 @@
+{% extends "layout.html" %} {% load static %}
+
+<link href="{% static 'table/css/bootstrap.min.css' %}" rel="stylesheet">
+<script src="{% static 'table/js/jquery.min.js' %}"></script>
+<script src="{% static 'table/js/bootstrap.min.js' %}"></script>
+
+{% block header %}
+<img src="static/logo.jpg" style="width:4%; position:absolute" />
+{% if user.username %}
+<span style="color:white"> Hi {{ user.email }} |
+    <a href="/logout/?next=/login/">Log Out</a>
+</span>
+{% endif %}
+{% endblock header %}
+
+{% block content %} {% if user.is_authenticated %}
+<div class="container">
+    <div class="form-group" style="margin-top:5%">
+        <div class="jumbotron">
+            <h1 style="text-align: center">Twitter Handler</h1>
+        </div>
+        <div class="col-auto">
+            <label class="sr-only" for="inlineFormInputGroup">Username</label>
+            <div class="input-group mb-2">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">@</div>
+                </div>
+                {% if username %}
+                <input type="text" class="form-control" id="inlineFormInputGroup" value={{ username }} placeholder={{ username }}> {% else %}
+                <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Username"> {% endif %}
+            </div>
+        </div>
+
+        <small id="emailHelp" class="form-text text-muted">Get tweets @username with real time rendering.</small>
+        <div>
+            {% if error %}
+                <a style="color:red"> {{ error }}</a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if tweets %}
+
+        <style>
+
+        /* Style the tab */
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+
+        /* Style the buttons inside the tab */
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 17px;
+        }
+
+        /* Change background color of buttons on hover */
+        .tab button:hover {
+            background-color: #ddd;
+        }
+
+        /* Create an active/current tablink class */
+        .tab button.active {
+            background-color: #ccc;
+        }
+
+        /* Style the tab content */
+        .tabcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+            draw: 2;
+        }
+
+        td.highlight {
+                font-weight: bold;
+                color: blue;
+            }
+
+table.display td {
+        height: 70px;
+        
+}
+        </style>
+
+
+        <div class="tab">
+          <button class="tablinks LiveData" onclick="menu(event, 'Live')" id="defaultOpen">Live</button>
+          <button class="tablinks HistoryData" onclick="menu(event, 'History')">History</button>
+        </div>
+
+        <div id="Live" class="tabcontent">
+
+                <table border="0" cellspacing="5" cellpadding="5">
+                        <tbody>
+                            <tr style="float: left;">
+                                <td> Date Range:</td>
+                                <td><input name="min" id="min" type="text"></td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+
+
+
+                 <table id="liveTable" class="display" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th style="width:100px;">Name</th>
+                                <th style="width:100px;">Image</th>
+                                <th>Text</th>
+                                <th>Tweet On</th>
+
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th style="width:100px;">Name</th>
+                                <th style="width:100px;">Image</th>
+                                <th>Text</th>
+                                <th>Tweet On</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+        </div>
+
+        <div id="History" class="tabcontent">
+
+                <table border="0" cellspacing="5" cellpadding="5">
+                        <tbody>
+                            <tr style="float: left;">
+                                <td> Date Range:</td>
+                                <td><input name="min1" id="min1" type="text"></td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+
+                 <table id="historyTab" class="display" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th style="width:100px;">Name</th>
+                                <th style="width:100px;">Image</th>
+                                <th>Text</th>
+                                <th>Tweet On</th>
+
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th style="width:100px;">Name</th>
+                                <th style="width:100px;">Image</th>
+                                <th>Text</th>
+                                <th>Tweet On</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+        </div>
+
+        <script>
+
+        function menu(evt, type) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(type).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        document.getElementById("defaultOpen").click();
+        </script>
+
+    {% endif %}
+</div>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" type="text/css">
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.8/js/jquery.dataTables.min.js"></script>
+
+<script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" type="text/css">    
+
+<!-- Include Date Range Picker -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap/3/css/bootstrap.css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+<script type="text/javascript" src="//cdn.datatables.net/plug-ins/1.10.16/dataRender/datetime.js"> </script>
+<script>
+        
+        var liveInterval;
+        var historyInterval;
+
+    $(document).ready(function () {
+ 
+        $('#min').val('');
+        $('#min1').val('');
+        
+            $.fn.dataTable.ext.search.push(
+                function (settings, data, dataIndex) {
+                    var min = null;
+                    var max =null;
+                    var fullDate = $('#min').val();
+                    var splitDate = fullDate.split("-");    
+                     if(fullDate){
+                        min = Date.parse(splitDate[0]);
+                        max = Date.parse(splitDate[1] + ' 24:00:00');
+                    }
+                    var startDate = new Date(data[3]);
+                    if (min == null && max == null) { return true; }
+                    if (min == null && startDate <= max) { return true;}
+                    if(max == null && startDate >= min) {return true;}
+                    if (startDate <= max && startDate >= min) { return true; }
+                    return false;
+                }
+            );
+
+            $.fn.dataTable.ext.search.push(
+                function (settings, data, dataIndex) {
+                    var min1 = null;
+                    var max1 =null;
+                    var fullDate1 = $('#min1').val();
+                    var splitDate1 = fullDate1.split("-");    
+                     if(fullDate1){
+                        min1 = Date.parse(splitDate1[0]);
+                        max1 = Date.parse(splitDate1[1]);
+                     }
+                    var startDate1 = new Date(data[3]);
+                    if (min1 == null && max1 == null) { return true; }
+                    if (min1 == null && startDate1 <= max1) { return true;}
+                    if(max1 == null && startDate1 >= min1) {return true;}
+                    if (startDate1 <= max1 && startDate1 >= min1) { return true; }
+                    return false;
+                }
+            );
+
+            $("#min").daterangepicker({ onSelect: function () { table.draw(); }, changeMonth: true, changeYear: true, autoUpdateInput: false, maxDate: new Date() });
+
+            $("#min1").daterangepicker({ onSelect: function () { table2.draw(); }, changeMonth: true, changeYear: true, autoUpdateInput: false, maxDate: new Date() });
+
+ $('input[name="min"]').on('apply.daterangepicker', function(ev, picker) {
+      $(this).val(picker.startDate.format('YYYY/MM/DD') + ' - ' + picker.endDate.format('YYYY/MM/DD'));
+  });
+  $('input[name="min1"]').on('apply.daterangepicker', function(ev, picker) {
+      $(this).val(picker.startDate.format('YYYY/MM/DD') + ' - ' + picker.endDate.format('YYYY/MM/DD'));
+  });
+
+         $('#inlineFormInputGroup').keydown(function(e){
+            if(e.keyCode == 13) {
+            let username = $('#inlineFormInputGroup').val();
+
+            console.log($('#inlineFormInputGroup').val());
+            window.location.href = "http://" + window.location.host + window.location.pathname + '?' + 'username=' + username;
+
+            }
+        });
+       
+        
+        let params = (new URL(document.location)).searchParams;
+        let username = params.get("username");
+
+        var table = $('#liveTable').DataTable({
+
+
+          "createdRow": function ( row, data, index ) {
+             var dateOne = new Date(data[3]);
+             var day1 = dateOne.getDate();
+             var month1 = dateOne.getMonth()+1; //January is 0!
+             var year1 = dateOne.getFullYear();
+             var hour1 = dateOne.getHours();
+             var minute1 = dateOne.getMinutes();
+
+             var today = new Date();
+             var day2 = today.getDate();
+             var month2 = today.getMonth()+1; //January is 0!
+             var year2 = today.getFullYear();
+             var hour2 = today.getHours()
+             var minute2 = today.getMinutes();
+
+             if ( day1 === day2 && month1 === month2 &&  year1 == year2 &&
+              hour1 === hour2 && (minute2 - minute1 <= 15)) {
+                $('td', row).addClass('highlight');
+            }
+        },
+
+   
+            columnDefs: [{
+                targets: [3],
+                render: function(d){
+                return moment(d).format("YYYY/MM/DD HH:mm");
+            }
+            }],
+
+        "bPaginate": false,
+
+        "order": [3, 'desc'],
+
+            ajax: "http://localhost:8000/tweet/stream/?username="+username + "&filter=live"
+        });
+
+
+         $('#min').change(function () {
+                table.draw();
+            });
+
+        liveInterval = setInterval(function () {
+            table.ajax.reload(null, false);
+        }, 2000);
+
+        var table2 = $('#historyTab').DataTable({
+        "pageLength": 20,
+        columnDefs: [{
+                targets: [3],
+                render: function(d){
+                return moment(d).format("YYYY/MM/DD HH:mm");
+            }
+            }],
+        "bLengthChange": false,
+            ajax: "http://localhost:8000/tweet/stream/?username="+username + "&filter=history"
+        });
+
+        $('#min1').change(function () {
+                table2.draw();
+            });
+
+        $('.HistoryData').click(function(){
+            $('#min').val('');
+            
+            clearInterval(liveInterval);
+            
+            historyInterval = setInterval(function () {
+            table2.ajax.reload(null, false);
+        }, 2000);
+                    
+        });
+
+         $('.LiveData').click(function(){
+            $('#min1').val('');
+        
+            clearInterval(historyInterval);          
+        
+            liveInterval = setInterval(function () {
+            table.ajax.reload(null, false);
+        }, 2000);
+
+        });
+
+
+    });
+
+</script>
+
+{% else %}
+
+<div class="text-center" style="margin-top: 20%">
+    <a class="btn btn-primary btn-lg" style="padding: 30px" href="{% url 'social:begin' 'google-oauth2' %}">Login with Google</a>
+</div>
+
+{% endif %}
+{% endblock content %}
