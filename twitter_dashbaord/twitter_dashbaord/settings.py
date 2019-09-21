@@ -132,7 +132,7 @@ AUTHENTICATION_BACKENDS = (
 # set google api authorization
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('google_auth2_key', '')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('google_auth2_secret', '')
-SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS = ['3pillarglobal.com']
+SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS = ['****.com']
 SOCIAL_AUTH_LOGIN_URL = '/login/'
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/tweet/'
 
